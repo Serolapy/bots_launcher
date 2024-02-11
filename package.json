@@ -1,0 +1,35 @@
+{
+  "name": "bots_launcher",
+  "version": "2.0.0",
+  "description": "Лаунчер для запуска и управления ботами",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "debug": "node index.js debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Serolapy/bots_launcher.git"
+  },
+  "author": "Serolapy, Krosh-id",
+  "license": "ISC",
+  "devDependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.1",
+    "simple-node-logger": "^21.8.12"
+  },
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "events": "^3.3.0",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.3.0",
+    "ngrok": "^5.0.0-beta.2",
+    "node-vk-bot-api": "^3.5.0"
+  }
+}
