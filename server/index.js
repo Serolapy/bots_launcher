@@ -1,10 +1,11 @@
 import 'colors';
 
 import express from 'express';
-import constants from '../const.json' assert {type: 'json'};
+import constants from '../const.js';
 import fs from 'fs';
 import mongoose from 'mongoose';
 
+// инициализация логгера
 import SimpleNodeLogger from "simple-node-logger";
 const log = SimpleNodeLogger.createSimpleFileLogger('./logs/main.log');
 log.setLevel(global.debug ? 'all' : 'warn');
@@ -12,7 +13,7 @@ log.setLevel(global.debug ? 'all' : 'warn');
 const app = express();
 const mongodbUrl = `${constants.DB_DOMAIN}:${constants.DB_MONGO_PORT}`;
 
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(express.static('server/public'));
@@ -22,8 +23,9 @@ fs.readdir('plugins/', (err, folders) => {
 		throw Error(err);
 	}
 	let plugin_names = [];
+	
 	folders.forEach(async folder_name => {
-		//файлы ингорируем
+		// файлы ингорируем
 		if (fs.lstatSync(`plugins/${folder_name}`).isFile()){
 			return
 		}
@@ -39,13 +41,14 @@ fs.readdir('plugins/', (err, folders) => {
 		}
 		const config = JSON.parse(fs.readFileSync(plugin_config_path).toString());
 
-		//проверка, все ли обязательные поля есть в плагине
-		['plugin_name'].forEach(field => {
+		// проверка, все ли обязательные поля есть в плагине
+		constants.PLUGIN_REQUIRED_FIELDS.forEach(field => {
 			if (config[field] === undefined){
 				throw Error(`Конфиг-файл плагина в каталоге ${folder_name} не имеет поля ${field}`);
 			}
 		});
 
+		// проверяем плагины на уникальность их имён
 		const plugin_name = '' + config.plugin_name;
 		
 		plugin_names.forEach(activited_plugin_name => {
