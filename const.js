@@ -5,7 +5,12 @@ const constants = {
 	DB_DOMAIN : "mongodb://localhost",				// домен базы данных
 	DB_MONGO_PORT : 27017,							// порт базы данных
 	DB_SERVER_PORT : 3900,							// порт для подключения к серверу базы данных
-	folders : ['plugins', 'logs', 'backups'],		// папки, которые необходимо обязательно создать в проекте
+	folders : [
+		'plugins', 
+		'logs', 
+		'backups', 
+		'temp',
+	],												// папки, которые необходимо обязательно создать в проекте
 	
 	default : {										// значения по умолчанию, если они не заданы в .env
 		JWT_SECRET : "profcat",
