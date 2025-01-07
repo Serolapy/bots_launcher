@@ -94,3 +94,9 @@ backups/
 #плагины
 plugins/
 bots_launcher.code-workspace
+
+#базы данных
+databases/
+
+# временные файлы
+temp/

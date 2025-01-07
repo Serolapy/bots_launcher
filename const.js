@@ -10,15 +10,17 @@ const constants = {
 		'logs', 
 		'backups', 
 		'temp',
+		'databases'
 	],												// папки, которые необходимо обязательно создать в проекте
-	
-	default : {										// значения по умолчанию, если они не заданы в .env
-		JWT_SECRET : "profcat",
-	},
 
 	PLUGIN_REQUIRED_FIELDS : [						// обязательные поля в конфиг-файле плагинов
 		'plugin_name',								// название плагина
-	]
+	],
+
+	DEFAULT_CONFIGURE_VALUES_MAINDB : {
+		JWT_SECRET : ''
+	},
+
 };
 
 export default constants;
