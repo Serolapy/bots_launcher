@@ -1,6 +1,6 @@
 {
   "name": "bots_launcher",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Лаунчер для запуска и управления ботами",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "install_plugins_dep": "node ./scripts/install_plugins_dep.js",
     "install_plugin": "node ./scripts/install_plugin.js",
     "uninstall_plugin": "node ./scripts/uninstall_plugin.js",
-    "update": "node ./scripts/update.js"
+    "update": "node ./scripts/update.js",
+    "config": "node ./scripts/config.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "os": "^0.1.2",
     "simple-node-logger": "^21.8.12",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "stdio": "^2.1.3"
   }
 }

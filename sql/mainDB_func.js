@@ -25,17 +25,16 @@ export async function createTables(db) {
 }
 
 /**
- * Вставка стандартных значений в таблицу configure
+ * Вставка значений в таблицу configure
  * @param {sqlite3.Database} db Открытая база данных
  */
-export async function insertDefaultConfigure(db) {
+export async function insertConfigure(db, configure) {
 	try {
 		const insertQuery = `
 			INSERT INTO configure (name, value) VALUES (?, ?);
 	  	`;
-  
-		// Дефолтные данные (замените на свои)
-		const keys = Object.keys(constants.DEFAULT_CONFIGURE_VALUES_MAINDB);
+		
+		const keys = Object.keys(configure);
 		
 		// Подготовка запроса
 		const stmt = db.prepare(insertQuery);
@@ -43,7 +42,7 @@ export async function insertDefaultConfigure(db) {
 		// Вставка данных в цикле (синхронно с await)
 		for (const key of keys) {
 			await new Promise((resolve, reject) => {
-		  		stmt.run(key, constants.DEFAULT_CONFIGURE_VALUES_MAINDB[key], (err) => {
+		  		stmt.run(key, configure[key], (err) => {
 					if (err) {
 				  		reject(err);
 					} else {
@@ -59,3 +58,24 @@ export async function insertDefaultConfigure(db) {
 	  	throw err; // Пробрасываем ошибку дальше
 	}
 }
+
+/**
+ * Получение данных конфигурации
+ * @param {sqlite3.Database} db Открытая база данных
+ * @returns {object} Объект с конфигурацией в формате ключ:значение
+*/
+export async function getConfigure(db) {
+	return new Promise((resolve, reject) => {
+		const sql = `SELECT * FROM configure;`;
+		const configure = {};
+	  	db.all(sql, [], function(err, rows) {
+			if (err) {
+		  		reject(err);
+			} else {
+				rows.forEach(row => { configure[row.name] = row.value; });
+		  		resolve(configure);
+			}
+	  	});
+	});
+}
+
