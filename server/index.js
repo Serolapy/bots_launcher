@@ -3,7 +3,6 @@ import 'colors';
 import express from 'express';
 import constants from '../const.js';
 import fs from 'fs';
-import mongoose from 'mongoose';
 
 // инициализация логгера
 import SimpleNodeLogger from "simple-node-logger";
@@ -11,7 +10,6 @@ const log = SimpleNodeLogger.createSimpleFileLogger('./logs/main.log');
 log.setLevel(global.debug ? 'all' : 'warn');
 
 const app = express();
-const mongodbUrl = `${constants.DB_DOMAIN}:${constants.DB_MONGO_PORT}`;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -60,7 +58,8 @@ fs.readdir('plugins/', (err, folders) => {
 		plugin_names.push(plugin_name);
 	 	const plugin_class = await import('../' + plugin_index_path);
 
-		const database = mongoose.createConnection(`${mongodbUrl}/bots_launcher-${plugin_name}`, {family: 4});
+		//const database = mongoose.createConnection(`${mongodbUrl}/bots_launcher-${plugin_name}`, {family: 4});
+		const database = null;
 		const plugin = new plugin_class.default(plugin_name, database);
 
 		app.use(`/${plugin_name}`, plugin.router);
