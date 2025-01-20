@@ -1,3 +1,6 @@
+// приложение
+import apps from './apps/index.js';
+
 // первоначальная настройка проекта
 import fs from 'fs';
 import constants from './const.js';
@@ -52,4 +55,4 @@ const SQLite3 = sqlite3.verbose();
 
 
 // запуск сервера
-import "./server/index.js";
+apps();
