@@ -45,12 +45,17 @@ const SQLite3 = sqlite3.verbose();
 		}
 	});
 
+	// базы данных плагинов
+	global.app_databases = [];
+	
 	// режим разработки
 	global.debug = false;
 	if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
 		global.debug = true;
 		console.log(`Ngrok started: ${await ngrok.connect(constants.BOT_SERVER_PORT)}`);
 	}
+	// запуск сервера
+	apps();	
 })();
 
 

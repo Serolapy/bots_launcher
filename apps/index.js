@@ -15,8 +15,8 @@ export default function	(){
 	app.use(express.json());
 
 	app.use(express.static('apps/web/public'));
-	app.use('/', webRouter);						// веб-сервер для страниц сервиса
-	app.use('/plugins/', pluginRouter);				// плагины
+	app.use('/', webRouter());						// веб-сервер для страниц сервиса
+	app.use('/plugins/', pluginRouter());			// плагины
 
 	console.log(`Start bot-launcher...`.yellow);
 	app.listen(constants.BOT_SERVER_PORT, function () {
