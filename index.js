@@ -4,7 +4,6 @@ import apps from './apps/index.js';
 // первоначальная настройка проекта
 import fs from 'fs';
 import constants from './const.js';
-import ngrok from 'ngrok';
 
 // база данных
 import sqlite3 from 'sqlite3';
@@ -52,12 +51,7 @@ const SQLite3 = sqlite3.verbose();
 	global.debug = false;
 	if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
 		global.debug = true;
-		console.log(`Ngrok started: ${await ngrok.connect(constants.BOT_SERVER_PORT)}`);
 	}
 	// запуск сервера
 	apps();	
 })();
-
-
-// запуск сервера
-apps();
