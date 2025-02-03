@@ -4,38 +4,41 @@ import sqlite3 from 'sqlite3';
 
 import constants from '../../const.js';
 
-export default function (){
+export default async function (){
 	const router = express.Router();
 	const SQLite3 = sqlite3.verbose();
 	const folders = fs.readdirSync('plugins/');
 	
 	let plugin_names = [];
-	folders.forEach(async folder_name => {
+	let plugins_path = [];
+	global.plugins = [];
+	
+	for (const folder_name of folders) { 
 		// файлы ингорируем
 		if (fs.lstatSync(`plugins/${folder_name}`).isFile()){
 			return
 		}
 
 		const plugin_index_path = `plugins/${folder_name}/index.js`;		//путь к исполняющему файлу плагина
+		const plugin_config_path = `plugins/${folder_name}/config.json`;	//путь к конфиг-файлу плагина
+		
 		if (!fs.existsSync(plugin_index_path)){
 			throw Error(`Плагин в каталоге '${folder_name}' не имеет файл index.js`);
 		}
-
-		const plugin_config_path = `plugins/${folder_name}/config.json`;	//путь к конфиг-файлу плагина
 		if (!fs.existsSync(plugin_config_path)){
 			throw Error(`Плагин в каталоге '${folder_name}' не имеет файл config.json`);
 		}
 
-		const config = JSON.parse(fs.readFileSync(plugin_config_path).toString());
 		// проверка, все ли обязательные поля есть в плагине
+		const plugin_config = JSON.parse(fs.readFileSync(plugin_config_path).toString());
 		constants.PLUGIN_REQUIRED_FIELDS.forEach(field => {
-			if (config[field] === undefined){
+			if (plugin_config[field] === undefined){
 				throw Error(`Конфиг-файл плагина в каталоге ${folder_name} не имеет поля ${field}`);
 			}
 		});
 
 		// проверяем плагины на уникальность их имён
-		const plugin_name = '' + config.plugin_name;
+		const plugin_name = '' + plugin_config.name;
 
 		plugin_names.forEach(activited_plugin_name => {
 			if (activited_plugin_name === plugin_name){
@@ -44,14 +47,26 @@ export default function (){
 		});
 
 		plugin_names.push(plugin_name);
-	 	const plugin_class = await import('../../' + plugin_index_path);
+
+		// запускаем index.js плагина
+	 	const plugin_initFunc = await import('../../' + plugin_index_path);
 
 		const database = new SQLite3.Database(`databases/plugin__${plugin_name}.db`);
 		global.app_databases.push(database);
-		const plugin = new plugin_class.default(plugin_name, database);
 
-		router.use(`/${plugin_name}`, plugin.router);
-	});
+		const plugin = new plugin_initFunc.default(plugin_config, database);
+		if (! plugin instanceof classes.Plugin){
+			throw Error(`Экспортируемый объект плагина ${plugin_config.name} не относится к классу Plugin`);
+		}
+		global.plugins.push(plugin);
+		
+		plugins_path = [...plugins_path, ...plugin.getPluginRouterPaths()]
+		router.use(`/${plugin_name}`, plugin.getPluginRouter());
+	}
+
+	console.log(`Инициированные пути плагинов: ${plugins_path.map(plugin => {
+		return `\n\t[ ${plugin.name} ] ${plugin.method}: http://localhost:${constants.BOT_SERVER_PORT}/plugins/${plugin.name}/${plugin.path}`;
+	}).join('')}`);
 
 	return router
 }

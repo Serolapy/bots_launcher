@@ -11,6 +11,9 @@ import * as sql_func from './sql/sql_func.js';
 import * as mainDB_func from './sql/mainDB_func.js';
 const SQLite3 = sqlite3.verbose();
 
+// классы
+import set_classes from './classes/index.js';
+
 // работаем с сохранёнными данными
 (async () => {
 	const mainDB = new SQLite3.Database('databases/main.db');
@@ -52,6 +55,10 @@ const SQLite3 = sqlite3.verbose();
 	if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
 		global.debug = true;
 	}
+
+	// определяем собственные классы
+	set_classes();
+	
 	// запуск сервера
-	apps();	
+	await apps();
 })();

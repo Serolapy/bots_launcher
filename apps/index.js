@@ -9,14 +9,14 @@ import constants from '../const.js';
 /**
  * Запуск приложений проекта
  */
-export default function	(){
+export default async function (){
 	const app = express();
 	app.use(express.urlencoded({ extended: false }));
 	app.use(express.json());
 
 	app.use(express.static('apps/web/public'));
 	app.use('/', webRouter());						// веб-сервер для страниц сервиса
-	app.use('/plugins/', pluginRouter());			// плагины
+	app.use('/plugins/', await pluginRouter());		// плагины
 
 	console.log(`Start bot-launcher...`.yellow);
 	app.listen(constants.BOT_SERVER_PORT, function () {

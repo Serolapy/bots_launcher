@@ -14,7 +14,7 @@ const constants = {
 	],												// папки, которые необходимо обязательно создать в проекте
 
 	PLUGIN_REQUIRED_FIELDS : [						// обязательные поля в конфиг-файле плагинов
-		'plugin_name',								// название плагина
+		'name',										// название плагина
 	],
 
 	DEFAULT_CONFIGURE_VALUES_MAINDB : {
