@@ -18,7 +18,6 @@ export default async function (){
 	app.use('/', webRouter());						// веб-сервер для страниц сервиса
 	app.use('/plugins/', await pluginRouter());		// плагины
 
-	console.log(`Start bot-launcher...`.yellow);
 	app.listen(constants.BOT_SERVER_PORT, function () {
 		console.log(`Bots-launcher's server started on port ${constants.BOT_SERVER_PORT}`.green,);
 	});

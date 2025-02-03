@@ -40,6 +40,14 @@ export default async function (){
 		// проверяем плагины на уникальность их имён
 		const plugin_name = '' + plugin_config.name;
 
+		// проверяем имя на корректность
+		const regex = /^[a-zA-Z0-9_]+$/;
+
+		// Проверка, что строка не пустая
+		if (plugin_name.length === 0 || ! regex.test(plugin_name)) {
+			throw Error(`Имя плагина в каталоге ${folder_name} имеет некорректное значение: ${plugin_name}. Допустимы только латинские символы, цифры и символ нижнего подчёркивания`);
+		}
+
 		plugin_names.forEach(activited_plugin_name => {
 			if (activited_plugin_name === plugin_name){
 				throw Error(`Плагин с именем ${plugin_name} уже существует`);

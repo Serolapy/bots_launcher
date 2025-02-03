@@ -1,3 +1,15 @@
+// режим разработки
+global.debug = false;
+if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
+	global.debug = true;
+}
+
+// очистка консоли
+if(! global.debug){
+	console.clear();
+}
+console.log(`Start bot-launcher...`.yellow);
+
 // приложение
 import apps from './apps/index.js';
 
@@ -50,11 +62,6 @@ import set_classes from './classes/index.js';
 	// базы данных плагинов
 	global.app_databases = [];
 	
-	// режим разработки
-	global.debug = false;
-	if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
-		global.debug = true;
-	}
 
 	// определяем собственные классы
 	set_classes();
