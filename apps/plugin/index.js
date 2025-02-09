@@ -1,9 +1,21 @@
+/**
+ * @file apps/plugin/index.js
+ * @description Модуль для инициализации и маршрутизации плагинов
+ */
+
 import express from 'express';
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
 
 import constants from '../../const.js';
 
+/**
+ * Инициализирует и настраивает маршрутизацию для всех плагинов
+ * @async
+ * @function
+ * @returns {Promise<express.Router>} Маршрутизатор Express с настроенными путями плагинов
+ * @throws {Error} Ошибка при некорректной конфигурации или инициализации плагина
+ */
 export default async function (){
 	const router = express.Router();
 	const SQLite3 = sqlite3.verbose();
@@ -13,7 +25,9 @@ export default async function (){
 	let plugins_path = [];
 	global.plugins = [];
 	
-	for (const folder_name of folders) { 
+	for (const folder_name of folders) {
+		// Проверка и инициализация плагина
+		
 		// файлы ингорируем
 		if (fs.lstatSync(`plugins/${folder_name}`).isFile()){
 			return
@@ -62,7 +76,13 @@ export default async function (){
 		const database = new SQLite3.Database(`databases/plugin__${plugin_name}.db`);
 		global.app_databases.push(database);
 
+		/**
+         * Инициализация плагина
+         * @type {import('../../classes/Plugin.js').default}
+         */
 		const plugin = new plugin_initFunc.default(plugin_config, database);
+		
+		// Проверка типа плагина
 		if (! plugin instanceof classes.Plugin){
 			throw Error(`Экспортируемый объект плагина ${plugin_config.name} не относится к классу Plugin`);
 		}

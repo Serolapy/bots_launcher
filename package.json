@@ -1,6 +1,6 @@
 {
   "name": "bots_launcher",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Лаунчер для запуска и управления ботами",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/Serolapy/bots_launcher.git"
   },
-  "author": "Serolapy, Krosh-id",
+  "author": "Serolapy",
   "license": "ISC",
   "type": "module",
   "dependencies": {

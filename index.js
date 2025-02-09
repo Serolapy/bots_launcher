@@ -1,8 +1,31 @@
-// режим разработки
+/**
+ * @file index.js
+ * @description Основной файл приложения, инициализирующий глобальные настройки и запускающий сервер.
+ */
+
+/**
+ * @global
+ * @description Флаг режима отладки
+ * @type {boolean}
+ */
 global.debug = false;
 if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
 	global.debug = true;
 }
+
+/**
+ * @global
+ * @description Конфигурация приложения
+ * @type {Object}
+ */
+global.app_configuration = {};
+
+/**
+ * @global
+ * @description Массив баз данных плагинов
+ * @type {Array}
+ */
+global.app_databases = [];
 
 // очистка консоли
 if(! global.debug){
@@ -26,7 +49,11 @@ const SQLite3 = sqlite3.verbose();
 // классы
 import set_classes from './classes/index.js';
 
-// работаем с сохранёнными данными
+/**
+ * @function
+ * @async
+ * @description Основная функция инициализации и запуска приложения
+ */
 (async () => {
 	const mainDB = new SQLite3.Database('databases/main.db');
 	
@@ -58,10 +85,6 @@ import set_classes from './classes/index.js';
 			fs.mkdirSync(folder);
 		}
 	});
-
-	// базы данных плагинов
-	global.app_databases = [];
-	
 
 	// определяем собственные классы
 	set_classes();

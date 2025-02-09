@@ -1,10 +1,16 @@
-/* Действия с главной базой данных системы */
+/**
+ * @file mainDB_func.js
+ * @description Модуль для работы с главной базой данных системы.
+ */
 
 import constants from '../const.js';
 
 /**
- * Создание шаблонных таблиц в БД
- * @param {sqlite3.Database} db Открытая база данных
+ * Создает шаблонные таблицы в базе данных.
+ * @async
+ * @function createTables
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @returns {Promise<Object>} Объект с результатами выполнения запроса.
  */
 export async function createTables(db) {
 	return new Promise((resolve, reject) => {
@@ -25,8 +31,12 @@ export async function createTables(db) {
 }
 
 /**
- * Вставка значений в таблицу configure
- * @param {sqlite3.Database} db Открытая база данных
+ * Вставляет значения в таблицу configure.
+ * @async
+ * @function insertConfigure
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @param {Object} configure - Объект с конфигурационными данными для вставки.
+ * @throws {Error} Выбрасывает ошибку, если вставка не удалась.
  */
 export async function insertConfigure(db, configure) {
 	try {
@@ -60,10 +70,12 @@ export async function insertConfigure(db, configure) {
 }
 
 /**
- * Получение данных конфигурации
- * @param {sqlite3.Database} db Открытая база данных
- * @returns {object} Объект с конфигурацией в формате ключ:значение
-*/
+ * Получает данные конфигурации из базы данных.
+ * @async
+ * @function getConfigure
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @returns {Promise<Object>} Объект с конфигурацией в формате ключ:значение.
+ */
 export async function getConfigure(db) {
 	return new Promise((resolve, reject) => {
 		const sql = `SELECT * FROM configure;`;
