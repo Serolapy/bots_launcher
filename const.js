@@ -10,6 +10,7 @@
  * @property {string[]} PLUGIN_REQUIRED_FIELDS - Обязательные поля в конфиг-файле плагинов
  * @property {Object} DEFAULT_CONFIGURE_VALUES_MAINDB - Значения по умолчанию для конфигурации основной базы данных
  * @property {string} DEFAULT_CONFIGURE_VALUES_MAINDB.JWT_SECRET - Секретный ключ для JSON Web Token
+ * @property {string} DEFAULT_SECRET_WORD - Слово для проверки правильности ввода пароля для БД
  */
 
 /**
@@ -28,12 +29,14 @@ const constants = {
 
 	PLUGIN_REQUIRED_FIELDS : [
 		'name',
+		'tokens'
 	],
 
 	DEFAULT_CONFIGURE_VALUES_MAINDB : {
 		JWT_SECRET : ''
 	},
 
+	DEFAULT_SECRET_WORD : 'Serolapy'
 };
 
 export default constants;

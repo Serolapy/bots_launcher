@@ -12,21 +12,44 @@ import constants from '../const.js';
  * @param {Object} db - Объект подключения к базе данных SQLite.
  * @returns {Promise<Object>} Объект с результатами выполнения запроса.
  */
-export async function createTables(db) {
-	return new Promise((resolve, reject) => {
-		const sql = `
-		CREATE TABLE configure (
-			name TEXT UNIQUE NOT NULL, 
-			value TEXT NOT NULL
-		);`;
-
-	  	db.run(sql, [], function(err) {
-			if (err) {
-		  		reject(err);
-			} else {
-		  		resolve(this);
+export function createTables(db) {
+	const createTableStatements = [
+	  	`
+			CREATE TABLE IF NOT EXISTS configure (
+			  name TEXT UNIQUE NOT NULL, 
+			  value TEXT NOT NULL
+			);
+	  	`,
+	  	`
+			CREATE TABLE IF NOT EXISTS tokens(
+			  plugin TEXT NOT NULL,
+			  token TEXT NOT NULL,
+			  value TEXT NOT NULL
+			);
+	  	`,
+	];
+  
+	function executeSql(db, sql) {
+		return new Promise((resolve, reject) => {
+		  db.run(sql, function (err) {
+				if (err) {
+			  		reject(err);
+			  		return;
+				}
+				resolve(this);
+		  	});
+		});
+	}
+	  
+	return new Promise(async (resolve, reject) => {
+	  	try {
+			for (const sql of createTableStatements) {
+		  		await executeSql(db, sql);
 			}
-	  	});
+			resolve(); // Разрешаем промис, когда все таблицы успешно созданы
+	  	} catch (err) {
+			reject(err); // Отклоняем промис в случае ошибки
+	  	}
 	});
 }
 
