@@ -1,7 +1,44 @@
+/**
+ * @file index.js
+ * @description Основной файл приложения, инициализирующий глобальные настройки и запускающий сервер.
+ */
+
+/**
+ * @global
+ * @description Флаг режима отладки
+ * @type {boolean}
+ */
+global.debug = false;
+if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
+	global.debug = true;
+}
+
+/**
+ * @global
+ * @description Конфигурация приложения
+ * @type {Object}
+ */
+global.app_configuration = {};
+
+/**
+ * @global
+ * @description Массив баз данных плагинов
+ * @type {Array}
+ */
+global.app_databases = [];
+
+// очистка консоли
+if(! global.debug){
+	console.clear();
+}
+console.log(`Start bot-launcher...`.yellow);
+
+// приложение
+import apps from './apps/index.js';
+
 // первоначальная настройка проекта
 import fs from 'fs';
 import constants from './const.js';
-import ngrok from 'ngrok';
 
 // база данных
 import sqlite3 from 'sqlite3';
@@ -9,7 +46,14 @@ import * as sql_func from './sql/sql_func.js';
 import * as mainDB_func from './sql/mainDB_func.js';
 const SQLite3 = sqlite3.verbose();
 
-// работаем с сохранёнными данными
+// классы
+import set_classes from './classes/index.js';
+
+/**
+ * @function
+ * @async
+ * @description Основная функция инициализации и запуска приложения
+ */
 (async () => {
 	const mainDB = new SQLite3.Database('databases/main.db');
 	
@@ -42,14 +86,9 @@ const SQLite3 = sqlite3.verbose();
 		}
 	});
 
-	// режим разработки
-	global.debug = false;
-	if(process.argv[2] !== undefined && process.argv[2] === 'debug'){
-		global.debug = true;
-		console.log(`Ngrok started: ${await ngrok.connect(constants.BOT_SERVER_PORT)}`);
-	}
+	// определяем собственные классы
+	set_classes();
+	
+	// запуск сервера
+	await apps();
 })();
-
-
-// запуск сервера
-import "./server/index.js";

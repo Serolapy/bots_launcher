@@ -11,6 +11,8 @@ import constants from '../const.js';
 const SQLite3 = sqlite3.verbose();
 const mainDB = new SQLite3.Database('./databases/main.db');
 
+import * as databasePassword from '../functions/databasePassword.js';
+
 (async ()=>{
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
 		// создание таблиц
@@ -38,6 +40,7 @@ const mainDB = new SQLite3.Database('./databases/main.db');
 				i++;
 			}
 		}
+		const password = await databasePassword.getPasswordFromConsole();
 
 		console.log("Новые настройки конфигурации:");
 		console.log("{");
@@ -46,6 +49,44 @@ const mainDB = new SQLite3.Database('./databases/main.db');
 		if (await stdio.ask(`Вы желаете сохранить конфигурацию?`, {options : ['y','n']}) === 'y'){
 			// добавляем служебную информацию и сохраняем
 			configuration["__date_of_change"] = new Date().toString();
+
+			// работа с паролем базы данных
+			const secretWordKey = '__secret_word';
+    		const defaultSecretWord = constants.DEFAULT_SECRET_WORD;
+    		// Проверяем, существовал ли секретный ключ ранее
+    		if (old_keys.includes(secretWordKey)) {
+    		    const decryptedSecretWord = databasePassword.decrypt(configure_old[secretWordKey], password);			
+    		    // Проверяем, удалось ли расшифровать и изменился ли пароль
+    		    if (decryptedSecretWord === null || decryptedSecretWord !== defaultSecretWord) {
+    		        // Расшифровка не удалась или пароль был изменен
+    		        const saveNewPassword = await stdio.ask(
+    		            'Пароль базы данных изменен или не удалось расшифровать предыдущий. Сохранить новый пароль?',
+    		            { options: ['y', 'n'] }
+    		        );
+    		        if (saveNewPassword === 'y') {
+    		            const encryptedSecretWord = databasePassword.encrypt(defaultSecretWord, password);
+    		            if (encryptedSecretWord !== null) {
+    		                configuration[secretWordKey] = encryptedSecretWord;
+    		            } else {
+    		                throw Error ('Ошибка: Не удалось зашифровать пароль базы данных.');
+    		            }
+    		        } else {
+    		            // Пользователь отказался сохранять новый пароль, оставляем старый (если он был)
+    		            configuration[secretWordKey] = configure_old[secretWordKey];
+    		        }
+    		    } else {
+    		        // Пароль не изменился, ничего не делаем
+    		        configuration[secretWordKey] = configure_old[secretWordKey];
+    		    }
+    		} else {
+    		    // Секретный ключ ранее не существовал
+    		    const encryptedSecretWord = databasePassword.encrypt(defaultSecretWord, password);
+    		    if (encryptedSecretWord !== null) {
+    		        configuration[secretWordKey] = encryptedSecretWord;
+    		    } else {
+    		        throw Error ('Ошибка: Не удалось зашифровать пароль базы данных.');
+    		    }
+    		}
 
 			await sql_func.deleteAllValuesFromTable(mainDB, 'configure');
 			await mainDB_func.insertConfigure(mainDB, configuration);

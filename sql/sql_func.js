@@ -1,9 +1,17 @@
-/*
-	В этом файле будут собраны
-	стандартные команды для синхронного
-	выполнения запросов к базе данных
-*/
+/**
+ * @file sql_func.js
+ * @description Модуль с функциями для синхронного выполнения запросов к базе данных SQLite.
+ */
 
+/**
+ * Выполняет SQL-запрос, который не возвращает результат (например, INSERT, UPDATE, DELETE).
+ * @async
+ * @function run
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @param {string} sql - SQL-запрос для выполнения.
+ * @param {Array} [params=[]] - Массив параметров для SQL-запроса.
+ * @returns {Promise<Object>} Объект с результатами выполнения запроса.
+ */
 export async function run(db, sql, params = []) {
 	return new Promise((resolve, reject) => {
 	  	db.run(sql, params, function(err) {
@@ -16,6 +24,15 @@ export async function run(db, sql, params = []) {
 	});
 }
 
+/**
+ * Выполняет SQL-запрос и возвращает все результаты.
+ * @async
+ * @function all
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @param {string} sql - SQL-запрос для выполнения.
+ * @param {Array} [params=[]] - Массив параметров для SQL-запроса.
+ * @returns {Promise<Array>} Массив с результатами запроса.
+ */
 export async function all(db, sql, params = []) {
 	return new Promise((resolve, reject) => {
 		db.all(sql, params, (err, rows) => {
@@ -28,6 +45,14 @@ export async function all(db, sql, params = []) {
 	});
 }
 
+/**
+ * Удаляет все записи из указанной таблицы.
+ * @async
+ * @function deleteAllValuesFromTable
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @param {string} table - Имя таблицы, из которой нужно удалить все записи.
+ * @returns {Promise<Object>} Объект с результатами выполнения запроса.
+ */
 export async function deleteAllValuesFromTable(db, table) {
 	return new Promise((resolve, reject) => {
 		const sql = `DELETE FROM ${table};`;
@@ -42,6 +67,14 @@ export async function deleteAllValuesFromTable(db, table) {
 	});
 }
 
+/**
+ * Проверяет существование указанных таблиц в базе данных.
+ * @async
+ * @function checkExistTables
+ * @param {Object} db - Объект подключения к базе данных SQLite.
+ * @param {Array<string>} [tables=[]] - Массив имен таблиц для проверки.
+ * @returns {Promise<boolean>} True, если все таблицы существуют, иначе false.
+ */
 export async function checkExistTables(db, tables = []) {
     for (const table of tables) {
         // Используем параметризованный запрос для предотвращения SQL-инъекций
