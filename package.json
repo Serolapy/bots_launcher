@@ -1,6 +1,6 @@
 {
   "name": "bots_launcher",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "description": "Лаунчер для запуска и управления ботами",
   "main": "index.js",
   "scripts": {
