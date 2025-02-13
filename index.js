@@ -55,6 +55,13 @@ import set_classes from './classes/index.js';
  * @description Основная функция инициализации и запуска приложения
  */
 (async () => {
+	// создаём каталоги, если их нет
+	constants.folders.forEach((folder) => {
+		if (!fs.existsSync(folder)){
+			fs.mkdirSync(folder);
+		}
+	});
+
 	const mainDB = new SQLite3.Database('databases/main.db');
 	
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
@@ -79,13 +86,6 @@ import set_classes from './classes/index.js';
 	});
 	global.app_configuration = write_config;
 	
-	// создаём каталоги, если их нет
-	constants.folders.forEach((folder) => {
-		if (!fs.existsSync(folder)){
-			fs.mkdirSync(folder);
-		}
-	});
-
 	// определяем собственные классы
 	set_classes();
 	
