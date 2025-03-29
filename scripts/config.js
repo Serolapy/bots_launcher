@@ -8,12 +8,13 @@ import * as sql_func from '../sql/sql_func.js';
 import * as mainDB_func from '../sql/mainDB_func.js';
 
 import constants from '../const.js';
-const SQLite3 = sqlite3.verbose();
-const mainDB = new SQLite3.Database('./databases/main.db');
 
 import * as databasePassword from '../functions/databasePassword.js';
 
-(async ()=>{
+export default async function () {
+	const SQLite3 = sqlite3.verbose();
+	const mainDB = new SQLite3.Database('./databases/main.db');
+
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
 		// создание таблиц
 		await mainDB_func.createTables(mainDB);
@@ -98,4 +99,4 @@ import * as databasePassword from '../functions/databasePassword.js';
 	else {
 		console.log("Изменения отменены");
 	}
-})();
+};

@@ -1,20 +1,18 @@
 import fs from 'fs';
+import stdio from "stdio";
 
-if(process.argv[2] === undefined){
-	console.error("Нет аргумента для запуска");
-	process.exit(1);	
-}
+export default async function () {
+	const folderName = await stdio.ask('Введите название плагина для удаления');
 
-const folderName = process.argv[2];
-
-try {
-	if (fs.existsSync(`plugins/${folderName}`)) {
-		fs.rmSync(`plugins/${folderName}`, { recursive: true, force: true });
-		console.error(`Плагин был удалён`);
+	try {
+		if (fs.existsSync(`plugins/${folderName}`)) {
+			fs.rmSync(`plugins/${folderName}`, { recursive: true, force: true });
+			console.error(`Плагин был удалён`);
+		}
+		else {
+			console.error(`Плагин не найден`);
+		}
+	} catch (error) {
+		console.error(`Ошибка при удалении плагина: ${error.message}`);
 	}
-	else {
-		console.error(`Плагин не найден`);
-	}
-} catch (error) {
-	console.error(`Ошибка при удалении плагина: ${error.message}`);
 }

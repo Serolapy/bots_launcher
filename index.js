@@ -31,7 +31,6 @@ global.app_databases = [];
 if(! global.debug){
 	console.clear();
 }
-console.log(`Start bot-launcher...`.yellow);
 
 // приложение
 import apps from './apps/index.js';
@@ -54,7 +53,9 @@ import set_classes from './classes/index.js';
  * @async
  * @description Основная функция инициализации и запуска приложения
  */
-(async () => {
+export default async () => {
+	console.log(`Start bot-launcher...`.yellow);
+
 	// создаём каталоги, если их нет
 	constants.folders.forEach((folder) => {
 		if (!fs.existsSync(folder)){
@@ -91,4 +92,4 @@ import set_classes from './classes/index.js';
 	
 	// запуск сервера
 	await apps();
-})();
+};

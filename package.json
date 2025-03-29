@@ -5,12 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "debug": "nodemon index.js debug",
-    "install_plugins_dep": "node ./scripts/install_plugins_dep.js",
-    "install_plugin": "node ./scripts/install_plugin.js",
-    "uninstall_plugin": "node ./scripts/uninstall_plugin.js",
-    "update": "node ./scripts/update.js",
-    "config": "node ./scripts/config.js"
+    "debug": "nodemon index.js debug"
   },
   "repository": {
     "type": "git",
