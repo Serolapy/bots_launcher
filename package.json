@@ -4,7 +4,7 @@
   "description": "Лаунчер для запуска и управления ботами",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node menu.js",
     "debug": "nodemon index.js debug"
   },
   "repository": {

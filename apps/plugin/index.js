@@ -30,7 +30,7 @@ export default async function (){
 	let plugins_path = [];
 	global.plugins = [];
 	
-	const configure = await mainDB_func.getConfigure(mainDB);
+	const configure = await mainDB_func.getConfigure(mainDB, 'main');
 
 	// вводим пароль для БД
 	const password = await databasePassword.getPasswordFromConsole();

@@ -20,7 +20,7 @@ export default async function () {
 		await mainDB_func.createTables(mainDB);
 	}
 
-	const configure_old = await mainDB_func.getConfigure(mainDB);
+	const configure_old = await mainDB_func.getConfigure(mainDB, 'main');
 	const old_keys = Object.keys(configure_old)
 	console.log(`Настройка конфигурации системы. ${old_keys.length === 0 ? "Текущая конфигурация не задана" : "Текущая конфигурация:"}`);
 	if (old_keys.length > 0){
@@ -89,8 +89,8 @@ export default async function () {
     		    }
     		}
 
-			await sql_func.deleteAllValuesFromTable(mainDB, 'configure');
-			await mainDB_func.insertConfigure(mainDB, configuration);
+			await mainDB_func.clearAllConfig_byName(mainDB, 'main');
+			await mainDB_func.insertConfigure(mainDB, configuration, 'main');
 		}
 		else {
 			console.log("Изменения отменены");

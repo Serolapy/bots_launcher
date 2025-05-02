@@ -69,7 +69,7 @@ export default async () => {
 		throw new Error(`Не найдена таблица конфигурации. Для настройки введите команду "npm run config"`);
 	}
 
-	const configure = await mainDB_func.getConfigure(mainDB);
+	const configure = await mainDB_func.getConfigure(mainDB, 'main');
 	
 	mainDB.close();
 
