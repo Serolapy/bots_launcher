@@ -3,6 +3,16 @@
  * @description Модуль для работы с главной базой данных системы.
  */
 
+import sqlite3 from 'sqlite3';
+const SQLite3 = sqlite3.verbose();
+
+/** Открытие базы данных 
+ * 	@function openMainDB
+*/
+export function openMainDB(){
+	return new SQLite3.Database('databases/main.db');
+}
+
 /**
  * Создает шаблонные таблицы в базе данных.
  * @async
@@ -245,6 +255,31 @@ export async function clearAllConfig_byName(db, name) {
                 reject(new Error(`Failed to clear config: ${err.message}`));
             } else {
                 resolve(true);
+            }
+        });
+    });
+}
+
+/**
+ * Проверяет существование имени в таблице name
+ * @async
+ * @function checkNameExists
+ * @param {Object} db - Объект подключения к базе данных SQLite
+ * @param {string} name - Имя для проверки
+ * @returns {Promise<boolean>} false если имя существует, true если не существует
+ * @throws {Error} В случае ошибки выполнения запроса
+ */
+export async function checkNameExists(db, name) {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT COUNT(*) as count FROM name WHERE name = ?`;
+        
+        db.get(sql, [name], function(err, row) {
+            if (err) {
+                reject(new Error(`Ошибка проверки имени: ${err.message}`));
+            } else {
+                // Если count > 0 - имя существует (возвращаем false)
+                // Если count = 0 - имя не существует (возвращаем true)
+                resolve(row.count === 0);
             }
         });
     });

@@ -36,14 +36,12 @@ if(! global.debug){
 import apps from './apps/index.js';
 
 // первоначальная настройка проекта
-import fs from 'fs';
+import createFolders from './functions/createFolders.js';
 import constants from './const.js';
 
 // база данных
-import sqlite3 from 'sqlite3';
 import * as sql_func from './sql/sql_func.js';
 import * as mainDB_func from './sql/mainDB_func.js';
-const SQLite3 = sqlite3.verbose();
 
 // классы
 import set_classes from './classes/index.js';
@@ -57,13 +55,9 @@ export default async () => {
 	console.log(`Start bot-launcher...`.yellow);
 
 	// создаём каталоги, если их нет
-	constants.folders.forEach((folder) => {
-		if (!fs.existsSync(folder)){
-			fs.mkdirSync(folder);
-		}
-	});
+	createFolders();
 
-	const mainDB = new SQLite3.Database('databases/main.db');
+	const mainDB = mainDB_func.openMainDB();
 	
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
 		throw new Error(`Не найдена таблица конфигурации. Для настройки введите команду "npm run config"`);

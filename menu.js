@@ -7,6 +7,8 @@ import install_pluginScript from "./scripts/install_plugin.js";
 import uninstall_pluginScript from "./scripts/uninstall_plugin.js";
 import install_plugins_depScript from "./scripts/install_plugins_dep.js";
 
+import createFolders from './functions/createFolders.js';
+
 /**
  * Показать раздел меню
  * @param {string} menuName - Раздел из menuConfig
@@ -69,22 +71,25 @@ const menuConfig = {
 		label: 'Главное меню',
 		items: {
 			'0': new Button ('Выход', () => { process.exit(0) }),
-			'1': new Button ('Запуск лаунчера', mainScript),
-			'2': new Button ('Настройка конфигурацию', configScript),
+			'1': new Button ('Запустить лаунчер', mainScript),
+			'2': new Button ('Настроить конфигурацию', configScript),
 			'3': new Button ('Действия с плагинами..', null, 'plugins'),
-			'4': new Button ('Обновление системы', updateScript),
+			'4': new Button ('Обновить систему', updateScript),
 		}
 	},
 	plugins: {
 		label: 'Действия с плагинами',
 		items: {
-			'0': new Button ('Главное меню', null, 'main'),
-			//'1': new Button ('Список плагинов', () => {}),
-			'2': new Button ('Установка плагина', install_pluginScript),
-			'3': new Button ('Установка зависимостей для плагинов', install_plugins_depScript),
-			'4': new Button ('Удаление плагина', uninstall_pluginScript),
+			'0': new Button ('Главное меню..', null, 'main'),
+			//'1': new Button ('Вывести список плагинов', () => {}),
+			'2': new Button ('Установить плагин', install_pluginScript),
+			'3': new Button ('Установить зависимости для плагинов', install_plugins_depScript),
+			'4': new Button ('Удалить плагин', uninstall_pluginScript),
 	  	}
 	},
 };
+
+// создаём каталоги, если их нет
+createFolders();
 
 showMenu('main');

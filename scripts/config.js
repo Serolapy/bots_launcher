@@ -3,7 +3,6 @@
 */
 import stdio from 'stdio';
 
-import sqlite3 from 'sqlite3';
 import * as sql_func from '../sql/sql_func.js';
 import * as mainDB_func from '../sql/mainDB_func.js';
 
@@ -12,8 +11,7 @@ import constants from '../const.js';
 import * as databasePassword from '../functions/databasePassword.js';
 
 export default async function () {
-	const SQLite3 = sqlite3.verbose();
-	const mainDB = new SQLite3.Database('./databases/main.db');
+	const mainDB = mainDB_func.openMainDB();
 
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
 		// создание таблиц

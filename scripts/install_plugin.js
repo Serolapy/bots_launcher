@@ -1,33 +1,77 @@
+import os from 'os';
+import path from 'path';
 import { exec } from 'child_process';
-import fs from 'fs';
+import { promisify } from 'util';
 import stdio from "stdio";
+import * as pluginFunc from '../functions/pluginFunc.js';
+import * as mainDB_func from '../sql/mainDB_func.js';
+import * as sql_func from '../sql/sql_func.js';
 
-// Определяем имя папки, в которую будет клонирован репозиторий
-// Используем последний сегмент URL без .git как имя папки
+const execAsync = promisify(exec);
 
-export default async function () {
-	const repoUrl = await stdio.ask('Введите ссылку на Git-репозиторий плагина');
+/**
+ * Устанавливает плагин из Git-репозитория с полной проверкой
+ * @async
+ * @function installPlugin
+ * @returns {Promise<void>}
+ */
+// TODO: сделать нормальную привязку к БД + вынести ее в отдельную функцию
 
-	const folderName = repoUrl.split('/').pop().replace(/\.git$/, '');
+const mainDB = mainDB_func.openMainDB();
 
-	// удаляем старую версию, если она есть
-	try {
-		if (fs.existsSync(`plugins/${folderName}`)) {
-			fs.rmSync(`plugins/${folderName}`, { recursive: true, force: true });
-			console.error(`Плагин был удалён`);
-		}
-	} catch (error) {
-		console.error(`Ошибка при удалении плагина: ${error.message}`);
-	}
+export default async function installPlugin() {
+    try {
+        // 1. Получаем URL репозитория
+        const repoUrl = await stdio.ask('Введите ссылку на Git-репозиторий плагина:');
+        const tempDir = path.join(os.tmpdir(), `botLauncher_installPlugin_${Date.now()}`);
 
-	// загружаем новую версию
-	exec(`git clone ${repoUrl} plugins/${folderName}`, (error, stdout) => {
-		if (error) {
-			console.error(`Ошибка при загрузке плагина: ${error.message}`);
-			return;
-		}
-		console.log(`Плагин успешно скачан: ${folderName}`);
-		console.log(stdout);
-		console.log('Для установки зависимостей плагина выполните команду npm run install_plugins_dep');
-	});
+        // 2. Скачиваем во временную директорию
+        console.log('Загрузка плагина...');
+        await execAsync(`git clone ${repoUrl} ${tempDir}`);
+
+        // 3. Проверяем структуру плагина
+        console.log('Проверка плагина...');
+        const pluginConfigPath = path.join(tempDir, 'config.json');
+        if (!fs.existsSync(pluginConfigPath)) {
+            throw new Error('Файл config.json не найден в репозитории');
+        }
+
+        const pluginConfig = JSON.parse(fs.readFileSync(pluginConfigPath, 'utf-8'));
+        const plugin_name = pluginConfig.name;
+
+        // 4. Проверяем имя в БД
+        if (await mainDB_func.checkNameExists(mainDB, plugin_name)) {
+            throw new Error(`Плагин с именем "${plugin_name}" уже установлен`);
+        }
+
+        // 5. Проверка плагина
+		pluginFunc.checkPlugin(mainDB, plugin_name);
+
+        // 6. Переносим в рабочую директорию
+        const finalDir = path.join('plugins', plugin_name);
+        console.log('Перенос файлов...');
+        if (fs.existsSync(finalDir)) {
+            fs.rmSync(finalDir, { recursive: true, force: true });
+        }
+        fs.renameSync(tempDir, finalDir);
+
+        // 7. Регистрируем в БД
+        console.log('Сохранение в БД...');
+        const nameId = await mainDB_func.createName(mainDB, plugin_name);
+		const insert_pluginToDb = `
+			INSERT INTO plugin (name_id, link, path)
+			VALUES (
+			    ?, 
+			    ?, 
+			    ?
+			);
+		`
+		await sql_func.run(mainDB, insert_pluginToDb, [nameId, repoUrl, finalDir]);
+        await mainDB_func.clearAllConfig_byName(db, plugin_name);
+
+        console.log(`✅ Плагин "${plugin_name}" успешно установлен в ${finalDir}`);
+    } catch (error) {
+        console.error(`Ошибка установки: ${error.message}`);
+        throw error;
+    }
 }

@@ -27,9 +27,9 @@ const constants = {
 		'databases'
 	],
 
+	// обязательные поля для плагинов в config.json
 	PLUGIN_REQUIRED_FIELDS : [
 		'name',
-		'tokens'
 	],
 
 	DEFAULT_CONFIGURE_VALUES_MAINDB : {
