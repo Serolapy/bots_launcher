@@ -9,6 +9,7 @@ import * as mainDB_func from '../sql/mainDB_func.js';
 import constants from '../const.js';
 
 import * as databasePassword from '../functions/databasePassword.js';
+// FIXME: жалоба, что «name» не существует
 
 export default async function () {
 	const mainDB = mainDB_func.openMainDB();

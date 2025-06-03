@@ -42,6 +42,7 @@ export default async function (){
      * Маршруты для плагинов
      */
 	app.use('/plugins/', await pluginRouter());
+	//TODO: app.use('/chatbots/', await botRouter());
 
 	// Запуск сервера
 	app.listen(constants.BOT_SERVER_PORT, function () {

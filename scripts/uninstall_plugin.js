@@ -1,6 +1,5 @@
 import fs from 'fs';
-import { promisify } from 'util';
-const rmAsync = promisify(fs.rm);
+import stdio from 'stdio';
 import * as mainDB_func from '../sql/mainDB_func.js';
 
 export default async function () {
@@ -19,8 +18,9 @@ export default async function () {
         	JOIN plugin p ON n.id = p.name_id
         	WHERE n.name = ?
     	`;
+		// FIXME: вынести гет и ран в отдельные синхронные функции
 		const pluginInfo = await mainDB.get(info_sql, [plugin_name]);
-
+		console.log(pluginInfo);
 		if(!pluginInfo){
 			throw new Error(`Плагин "${plugin_name}" не найден в базе данных`);
 		}

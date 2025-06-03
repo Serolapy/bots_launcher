@@ -8,6 +8,7 @@ import uninstall_pluginScript from "./scripts/uninstall_plugin.js";
 import install_plugins_depScript from "./scripts/install_plugins_dep.js";
 
 import createFolders from './functions/createFolders.js';
+import * as mainDB_func from "./sql/mainDB_func.js";
 
 /**
  * Показать раздел меню
@@ -45,7 +46,7 @@ async function showMenu(menuName){
 	const btn = menu.items[actionNumber];
 
 	if (btn.action){
-		btn.action();
+		await btn.action();
 		showMenu(menuName);
 	} else {
 		showMenu(btn.submenu);
@@ -81,13 +82,18 @@ const menuConfig = {
 		label: 'Действия с плагинами',
 		items: {
 			'0': new Button ('Главное меню..', null, 'main'),
-			//'1': new Button ('Вывести список плагинов', () => {}),
+			//TODO: '1': new Button ('Вывести список плагинов', () => {}),
 			'2': new Button ('Установить плагин', install_pluginScript),
 			'3': new Button ('Установить зависимости для плагинов', install_plugins_depScript),
 			'4': new Button ('Удалить плагин', uninstall_pluginScript),
 	  	}
 	},
 };
+
+// инициализируем базу данных
+const mainDB = mainDB_func.openMainDB();
+await mainDB_func.createTables(mainDB);
+await mainDB.close();
 
 // создаём каталоги, если их нет
 createFolders();

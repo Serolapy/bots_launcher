@@ -1,5 +1,5 @@
 import fs from "fs";
-import constants from "../../constants.js";
+import constants from "../const.js";
 
 export async function getPluginPathByName(db, pluginName) {
     try {
@@ -11,7 +11,7 @@ export async function getPluginPathByName(db, pluginName) {
             LIMIT 1
         `;
         
-        const results = await all(db, sql, [pluginName]);
+        const results = await db.all(db, sql, [pluginName]);
         
         // Если есть результаты, возвращаем path, иначе null
         return results.length > 0 ? results[0].path : null;
@@ -22,7 +22,7 @@ export async function getPluginPathByName(db, pluginName) {
 
 /**
  * 
- * Проверяет корректность структуры и конфигурации плагина перед установкой/запуском
+ * Проверяет корректность структуры и конфигурации плагина после установки
  * @async
  * @function checkPlugin
  * @param {Object} db - Объект подключения к базе данных SQLite
@@ -88,6 +88,59 @@ export async function checkPlugin(db, pluginName) {
         }
     } catch (e) {
         throw new Error(`Ошибка чтения index.js плагина "${pluginName}": ${e.message}`);
+    }
+
+    return true;
+}
+
+/**
+ * 
+ * Проверяет корректность структуры и конфигурации плагина перед установкой
+ * @async
+ * @function checkPluginBeforeInstall
+ * @param {string} pluginPath - Название плагина (из таблицы name)
+ * @returns {Promise<boolean>} true если проверка пройдена успешно
+ * @throws {Error} Если плагин не проходит какую-либо проверку
+ */
+export async function checkPluginBeforeInstall(pluginPath) {
+
+    // 4. Пути к обязательным файлам плагина
+    const pluginIndexPath = `${pluginPath}/index.js`;
+    const pluginConfigPath = `${pluginPath}/config.json`;
+
+    // 5. Проверка наличия обязательных файлов
+    if (!fs.existsSync(pluginIndexPath)) {
+        throw new Error(`Плагин не имеет обязательного файла index.js`);
+    }
+    if (!fs.existsSync(pluginConfigPath)) {
+        throw new Error(`Плагин не имеет обязательного файла config.json`);
+    }
+
+    // 6. Чтение и валидация конфигурации
+    let pluginConfig;
+    try {
+        pluginConfig = JSON.parse(fs.readFileSync(pluginConfigPath, 'utf-8'));
+    } catch (e) {
+        throw new Error(`Некорректный JSON в конфигурации плагина: ${e.message}`);
+    }
+
+    // 7. Проверка обязательных полей в конфиге
+    console.log(pluginConfig)
+
+    constants.PLUGIN_REQUIRED_FIELDS.forEach(field => {
+        if (pluginConfig[field] === undefined) {
+            throw new Error(`Конфиг плагина не содержит обязательного поля "${field}"`);
+        }
+    });
+
+    // 9. Дополнительная проверка файла index.js
+    try {
+        const indexContent = fs.readFileSync(pluginIndexPath, 'utf-8');
+        if (!indexContent.trim()) {
+            throw new Error(`Файл index.js плагина пуст`);
+        }
+    } catch (e) {
+        throw new Error(`Ошибка чтения index.js плагина: ${e.message}`);
     }
 
     return true;

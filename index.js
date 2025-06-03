@@ -44,7 +44,7 @@ import * as sql_func from './sql/sql_func.js';
 import * as mainDB_func from './sql/mainDB_func.js';
 
 // классы
-import set_classes from './classes/index.js';
+import classes from './classes/index.js';
 
 /**
  * @function
@@ -59,6 +59,7 @@ export default async () => {
 
 	const mainDB = mainDB_func.openMainDB();
 	
+	// TODO: добавить проверку всей БД
 	if (! await sql_func.checkExistTables(mainDB, ['configure'])){
 		throw new Error(`Не найдена таблица конфигурации. Для настройки введите команду "npm run config"`);
 	}
@@ -74,6 +75,7 @@ export default async () => {
 		if (configure[key] === undefined){
 			throw new Error(`Не найдена конфигурация ${key}. Для настройки введите команду "npm run config"`);
 		}
+		// TODO: отказаться от global
 		// выводим в global только несистемные конфигурации
 		if (key.length >= 2 && key.slice(0,1) !== "__"){
 			write_config[key] = configure[key]
@@ -81,8 +83,8 @@ export default async () => {
 	});
 	global.app_configuration = write_config;
 	
-	// определяем собственные классы
-	set_classes();
+	// выводим консоль
+	console.log(`[ classes/index.js ]`.blue, `Определены следующие классы: ${Object.keys(classes).join(', ')}`);
 	
 	// запуск сервера
 	await apps();

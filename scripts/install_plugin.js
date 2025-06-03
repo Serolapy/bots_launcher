@@ -6,6 +6,7 @@ import stdio from "stdio";
 import * as pluginFunc from '../functions/pluginFunc.js';
 import * as mainDB_func from '../sql/mainDB_func.js';
 import * as sql_func from '../sql/sql_func.js';
+import fs from 'fs';
 
 const execAsync = promisify(exec);
 
@@ -22,7 +23,7 @@ const mainDB = mainDB_func.openMainDB();
 export default async function installPlugin() {
     try {
         // 1. Получаем URL репозитория
-        const repoUrl = await stdio.ask('Введите ссылку на Git-репозиторий плагина:');
+        const repoUrl = await stdio.ask('Введите ссылку на Git-репозиторий плагина');
         const tempDir = path.join(os.tmpdir(), `botLauncher_installPlugin_${Date.now()}`);
 
         // 2. Скачиваем во временную директорию
@@ -39,13 +40,13 @@ export default async function installPlugin() {
         const pluginConfig = JSON.parse(fs.readFileSync(pluginConfigPath, 'utf-8'));
         const plugin_name = pluginConfig.name;
 
-        // 4. Проверяем имя в БД
-        if (await mainDB_func.checkNameExists(mainDB, plugin_name)) {
+        // 4. Проверка плагина
+		pluginFunc.checkPluginBeforeInstall(tempDir);
+
+        // 5. Проверяем имя в БД
+        if (! await mainDB_func.checkNameExists(mainDB, plugin_name)) {
             throw new Error(`Плагин с именем "${plugin_name}" уже установлен`);
         }
-
-        // 5. Проверка плагина
-		pluginFunc.checkPlugin(mainDB, plugin_name);
 
         // 6. Переносим в рабочую директорию
         const finalDir = path.join('plugins', plugin_name);
@@ -53,7 +54,8 @@ export default async function installPlugin() {
         if (fs.existsSync(finalDir)) {
             fs.rmSync(finalDir, { recursive: true, force: true });
         }
-        fs.renameSync(tempDir, finalDir);
+        fs.cpSync(tempDir, finalDir, { recursive: true, force: true });
+        fs.rmSync(tempDir, { recursive: true, force: true });
 
         // 7. Регистрируем в БД
         console.log('Сохранение в БД...');
@@ -67,8 +69,8 @@ export default async function installPlugin() {
 			);
 		`
 		await sql_func.run(mainDB, insert_pluginToDb, [nameId, repoUrl, finalDir]);
-        await mainDB_func.clearAllConfig_byName(db, plugin_name);
-
+        await mainDB_func.clearAllConfig_byName(mainDB, plugin_name);
+        // TODO: регистрация в messenger, если надо
         console.log(`✅ Плагин "${plugin_name}" успешно установлен в ${finalDir}`);
     } catch (error) {
         console.error(`Ошибка установки: ${error.message}`);
